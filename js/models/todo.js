@@ -6,6 +6,9 @@ var app = app || {};
 
 	// Todo Model
 	// ----------
+	
+	// Define the swarm model
+	Swarm.Model.extend('Todo', {});
 
 	// Our basic **Todo** model has `title`, `order`, and `completed` attributes.
 	app.Todo = Backbone.Model.extend({
@@ -16,9 +19,15 @@ var app = app || {};
 			completed: false
 		},
 
+		initialize: function(){
+			// The swarm logic - map the model with type `Todo`
+			// Identifier will be applied implicitly from `id` property.
+			Swarm.BackboneModelMixin.call(this, '/Todo');
+		},
+
 		// Toggle the `completed` state of this todo item.
 		toggle: function () {
-			this.save({
+			this.set({
 				completed: !this.get('completed')
 			});
 		}

@@ -43,7 +43,8 @@ var app = app || {};
 			// Suppresses 'add' events with {reset: true} and prevents the app view
 			// from being re-rendered for every model. Only renders when the 'reset'
 			// event is triggered at the end of the fetch.
-			app.todos.fetch({reset: true});
+			this.listenToOnce(app.todos, 'sync', this.addAll);
+			app.todos.fetch();
 		},
 
 		// Re-rendering the App just means refreshing the statistics -- the rest
@@ -77,6 +78,10 @@ var app = app || {};
 		// appending its element to the `<ul>`.
 		addOne: function (todo) {
 			var view = new app.TodoView({ model: todo });
+			if (Swarm.env.debug) {
+				app.views = app.views || {};
+				app.views[todo.get('id')] = view
+			}
 			this.$list.append(view.render().el);
 		},
 
@@ -107,13 +112,14 @@ var app = app || {};
 		// persisting it to *localStorage*.
 		createOnEnter: function (e) {
 			if (e.which === ENTER_KEY && this.$input.val().trim()) {
-				app.todos.create(this.newAttributes());
+				app.todos.add(this.newAttributes());
 				this.$input.val('');
 			}
 		},
 
 		// Clear all completed todo items, destroying their models.
 		clearCompleted: function () {
+			// TODO
 			_.invoke(app.todos.completed(), 'destroy');
 			return false;
 		},
@@ -122,7 +128,7 @@ var app = app || {};
 			var completed = this.allCheckbox.checked;
 
 			app.todos.each(function (todo) {
-				todo.save({
+				todo.set({
 					completed: completed
 				});
 			});

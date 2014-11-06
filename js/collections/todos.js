@@ -13,8 +13,17 @@ var app = app || {};
 		// Reference to this collection's model.
 		model: app.Todo,
 
-		// Save all of the todo items under the `"todos"` namespace.
-		localStorage: new Backbone.LocalStorage('todos-backbone'),
+		// Collection identifier, needs for swarm
+		id: 'todosCollection',
+
+		// Attach Swarm logic
+		initialize: function(){
+			// The swarm logic - map the collection with type `Todos`.
+			// Identifier will be applied implicitly from `id` property.
+			// Or you may specify it explicitly:
+			//    Swarm.BackboneCollectionMixin.call(this, '/Todos#todosCollection')
+			Swarm.BackboneCollectionMixin.call(this, '/Todos')
+		},
 
 		// Filter down the list of all todo items that are finished.
 		completed: function () {
